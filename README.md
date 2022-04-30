@@ -35,3 +35,25 @@ cmake . -B build
 ```sh
 cmake --build build
 ```
+
+### バッチファイルについて
+
+Windows 環境ではバッチファイルにより、一つのコマンドで`cpplint`から`cmake`まで可能です。
+
+```sh
+.\lint-cmake.bat
+```
+
+#### オプション
+
+- Configure しない
+
+  ```sh
+  .\lint-cmake.bat --no-conf
+  ```
+
+- Generate のメッセージを出力させない
+
+  ```sh
+  .\lint-cmake.bat --no-msg
+  ```
