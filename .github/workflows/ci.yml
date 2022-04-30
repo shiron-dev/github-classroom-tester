@@ -2,7 +2,7 @@ name: CI
 on: [push, pull_request]
 jobs:
   CI:
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-python@v1
