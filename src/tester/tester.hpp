@@ -7,9 +7,17 @@ using std::string;
 
 namespace my_tester {
 namespace io {
-string RunByShell(string command);
-void CompileCppFile(string file, string compiler = "", string option = "");
-string RunFile(string file, string input = "");
+struct DefaultConfig {
+  static const char *COMPILERS[];
+  static const int COMPILERS_SIZE;
+  static const char *CHECK_COMMAND;
+  static const char *COMPILE_OUT_FILE;
+  static const char *PRINT_COMMAND;
+};
+bool RunByShell(string cmd, string *std_out, int *status_code);
+bool CheckHasCommand(string cmd);
+string CompileCppFile(string file, string compiler = "", string option = "");
+string RunFile(string file, string input);
 }  // namespace io
 }  // namespace my_tester
 
