@@ -10,8 +10,8 @@ struct OptionKeywords {
   static const char *COMMAND_NAME;
 };
 std::map<string, string> ParseOptions(int argc, char *argv[]);
-void PrintToShell(char *str);
-const char *InputMessage();
+void PrintToShell(string str);
+const string InputMessage();
 }  // namespace my_terminal
 
 #endif  // SRC_TERMINAL_TERMINAL_HPP_
