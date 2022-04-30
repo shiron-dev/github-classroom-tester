@@ -2,6 +2,8 @@
 
 ## 開発環境について
 
+現在、Microsoft Windows のみでコンパイル及び実行ができます。
+
 ### リント
 
 [cpplint](https://github.com/cpplint/cpplint)を利用しています。
