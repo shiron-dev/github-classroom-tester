@@ -1,0 +1,16 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  cpplint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+      - name: cpplint
+        run: |
+          pip install cpplint
+          cpplint --filter=-legal --recursive src/
+      - name: build
+        run: |
+          cmake . -B build
+          cmake --build build
