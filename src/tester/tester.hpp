@@ -14,10 +14,11 @@ struct DefaultConfig {
   static const char *COMPILE_OUT_FILE;
   static const char *PRINT_COMMAND;
 };
-bool RunByShell(string cmd, string *std_out, int *status_code);
+int RunByShell(string cmd, string *std_out, int *status_code);
 bool CheckHasCommand(string cmd);
 string CompileCppFile(string file, string compiler = "", string option = "");
 string RunFile(string file, string input);
+int FileOpen(string file, string *file_out);
 }  // namespace io
 }  // namespace my_tester
 

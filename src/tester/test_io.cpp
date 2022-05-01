@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <fstream>
 #include <memory>
 
 #include "terminal/terminal.hpp"
@@ -11,12 +12,12 @@ const char *my_tester::io::DefaultConfig::COMPILE_OUT_FILE = "test.o";
 const char *my_tester::io::DefaultConfig::PRINT_COMMAND = "echo";
 
 // 現在Windowsのみの対応
-bool my_tester::io::RunByShell(string cmd, string *std_out, int *status_code) {
+int my_tester::io::RunByShell(string cmd, string *std_out, int *status_code) {
   std::shared_ptr<FILE> pipe(_popen(cmd.c_str(), "r"), [&](FILE *p) {
     status_code = new int(_pclose(p));
   });
   if (!pipe) {
-    return false;
+    return -1;
   }
   char buf[256];
   while (!feof(pipe.get())) {
@@ -26,7 +27,7 @@ bool my_tester::io::RunByShell(string cmd, string *std_out, int *status_code) {
   }
   *status_code = *(new int(_pclose(pipe.get())));
 
-  return true;
+  return 0;
 }
 
 bool my_tester::io::CheckHasCommand(string cmd) {
@@ -90,4 +91,17 @@ string my_tester::io::RunFile(string file, string input = "") {
     return std_out;
   }
   return "";
+}
+
+int my_tester::io::FileOpen(string file, string *file_out) {
+  std::ifstream ifs(file);
+  string str;
+  if (ifs.fail()) {
+    my_terminal::PrintToShell("Failed to open " + file + ".");
+    return -1;
+  }
+  while (getline(ifs, str)) {
+    *file_out += str + '\n';
+  }
+  return 0;
 }
