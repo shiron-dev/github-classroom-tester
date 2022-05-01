@@ -49,7 +49,10 @@ string my_tester::io::CompileCppFile(string file, string compiler,
     if (CheckHasCommand(compiler)) {
       use_compiler = compiler;
     } else {
-      my_terminal::PrintToShell("There is not " + compiler + ".");
+      int color_code = my_terminal::decoration::ShellColorCode::RED;
+      string out_str = my_terminal::decoration::AddColorToString(
+          "There is not \"" + compiler + "\" compiler.", color_code);
+      my_terminal::PrintToShell(out_str);
       return "";
     }
   }
@@ -97,7 +100,10 @@ int my_tester::io::FileOpen(string file, string *file_out) {
   std::ifstream ifs(file);
   string str;
   if (ifs.fail()) {
-    my_terminal::PrintToShell("Failed to open " + file + ".");
+    int color_code = my_terminal::decoration::ShellColorCode::RED;
+    string out_str = my_terminal::decoration::AddColorToString(
+        "Failed to open \"" + file + "\".", color_code);
+    my_terminal::PrintToShell(out_str);
     return -1;
   }
   while (getline(ifs, str)) {
