@@ -6,6 +6,16 @@
 using std::string;
 
 namespace my_tester {
+struct TestData {
+  string test_name;
+  string file_name;
+  string type;
+  string input = "";
+  string output = "";
+};
+bool IsMatchTest(string result, string expected);
+TestData GetTestDataByJSON(string json_content);
+int RunTests(std::map<string, string> options);
 namespace io {
 struct DefaultConfig {
   static const char *COMPILERS[];
