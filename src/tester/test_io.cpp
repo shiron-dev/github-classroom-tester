@@ -5,8 +5,8 @@
 #include "terminal/terminal.hpp"
 #include "tester/tester.hpp"
 
-const char *my_tester::io::DefaultConfig::COMPILERS[] = {"g++", "cl"};
-const int my_tester::io::DefaultConfig::COMPILERS_SIZE = 2;
+const char *my_tester::io::DefaultConfig::COMPILERS[] = {"g++", "c++", "cl"};
+const int my_tester::io::DefaultConfig::COMPILERS_SIZE = 3;
 const char *my_tester::io::DefaultConfig::CHECK_COMMAND = "where";
 const char *my_tester::io::DefaultConfig::COMPILE_OUT_FILE = "test.o";
 const char *my_tester::io::DefaultConfig::PRINT_COMMAND = "echo";
@@ -78,7 +78,7 @@ string my_tester::io::CompileCppFile(string file, string compiler,
   return "";
 }
 
-string my_tester::io::RunFile(string file, string input = "") {
+string my_tester::io::RunFile(string file, string input) {
   string cmd = "";
   if (input == "") {
     cmd = file;
