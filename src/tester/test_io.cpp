@@ -1,14 +1,17 @@
 #include <cstdio>
+#include <fstream>
 #include <memory>
 
 #include "terminal/terminal.hpp"
 #include "tester/tester.hpp"
 
-const char *my_tester::io::DefaultConfig::COMPILERS[] = {"g++", "cl"};
-const int my_tester::io::DefaultConfig::COMPILERS_SIZE = 2;
+const char *my_tester::io::DefaultConfig::COMPILERS[] = {"g++", "c++", "cl"};
+const int my_tester::io::DefaultConfig::COMPILERS_SIZE = 3;
 const char *my_tester::io::DefaultConfig::CHECK_COMMAND = "where";
 const char *my_tester::io::DefaultConfig::COMPILE_OUT_FILE = "test.o";
-const char *my_tester::io::DefaultConfig::PRINT_COMMAND = "echo";
+const char *my_tester::io::DefaultConfig::PRINT_COMMAND = "type";
+const char *my_tester::io::DefaultConfig::DELETE_COMMAND = "del";
+const char *my_tester::io::DefaultConfig::INPUT_TEXT_FILE_NAME = "2c4485a79ada";
 
 // 現在Windowsのみの対応
 bool my_tester::io::RunByShell(string cmd, string *std_out, int *status_code) {
@@ -48,7 +51,10 @@ string my_tester::io::CompileCppFile(string file, string compiler,
     if (CheckHasCommand(compiler)) {
       use_compiler = compiler;
     } else {
-      my_terminal::PrintToShell("There is not " + compiler + ".");
+      int color_code = my_terminal::decoration::ShellColorCode::RED;
+      string out_str = my_terminal::decoration::AddColorToString(
+          "There is not \"" + compiler + "\" compiler.", color_code);
+      my_terminal::PrintToShell(out_str);
       return "";
     }
   }
@@ -66,28 +72,61 @@ string my_tester::io::CompileCppFile(string file, string compiler,
     string std_out = "";
     int status_code = -1;
     if (RunByShell(cmd, &std_out, &status_code)) {
-      const int max_path = 128;
-      char szDrive[8], szPath[max_path], szFName[max_path], szExt[max_path];
-      _splitpath_s(file.c_str(), szDrive, sizeof(szDrive), szPath,
-                   sizeof(szPath), szFName, sizeof(szFName), szExt,
-                   sizeof(szExt));
-      return string(szPath) + DefaultConfig::COMPILE_OUT_FILE;
+      if (status_code == 0) {
+        const int max_path = 128;
+        char szDrive[8], szPath[max_path], szFName[max_path], szExt[max_path];
+        _splitpath_s(file.c_str(), szDrive, sizeof(szDrive), szPath,
+                     sizeof(szPath), szFName, sizeof(szFName), szExt,
+                     sizeof(szExt));
+        return string(szPath) + DefaultConfig::COMPILE_OUT_FILE;
+      }
     }
   }
   return "";
 }
 
-string my_tester::io::RunFile(string file, string input = "") {
+string my_tester::io::RunFile(string file, string input) {
   string cmd = "";
   if (input == "") {
     cmd = file;
   } else {
-    cmd = string(DefaultConfig::PRINT_COMMAND) + " \"" + input + "\" | " + file;
+    FileWrite(string(DefaultConfig::INPUT_TEXT_FILE_NAME), input);
+    cmd = string(DefaultConfig::PRINT_COMMAND) + " " +
+          string(DefaultConfig::INPUT_TEXT_FILE_NAME) + " | " + file;
   }
   string std_out = "";
   int status_code = -1;
-  if (my_tester::io::RunByShell(cmd, &std_out, &status_code)) {
-    return std_out;
+  my_tester::io::RunByShell(cmd, &std_out, &status_code);
+  if (input != "") {
+    string rm_cmd = string(DefaultConfig::DELETE_COMMAND) + " " +
+                    string(DefaultConfig::INPUT_TEXT_FILE_NAME);
+    string rm_s_out = "";
+    int rm_s_code = 0;
+    my_tester::io::RunByShell(rm_cmd, &rm_s_out, &rm_s_code);
   }
-  return "";
+  return std_out;
+}
+
+bool my_tester::io::FileOpen(string file, string *file_out) {
+  std::ifstream ifs(file);
+  string str;
+  if (ifs.fail()) {
+    int color_code = my_terminal::decoration::ShellColorCode::RED;
+    string out_str = my_terminal::decoration::AddColorToString(
+        "Failed to open \"" + file + "\".", color_code);
+    my_terminal::PrintToShell(out_str);
+    return false;
+  }
+  while (getline(ifs, str)) {
+    *file_out += str + '\n';
+  }
+  return true;
+}
+
+bool my_tester::io::FileWrite(string file, string content) {
+  std::ofstream ofs;
+  ofs.open(file, std::ios::out);
+  ofs << content;
+  ofs.close();
+  return true;
 }

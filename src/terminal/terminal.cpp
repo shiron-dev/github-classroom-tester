@@ -3,6 +3,8 @@
 #include <iostream>
 
 const char *my_terminal::OptionKeywords::COMMAND_NAME = "command";
+const char *my_terminal::OptionKeywords::TESTDATA_FILE_NAME = "testdata";
+const char *my_terminal::OptionKeywords::TARGET_TEST_NAME = "test";
 
 std::map<string, string> my_terminal::ParseOptions(int argc, char *argv[]) {
   std::map<string, string> options;
@@ -23,7 +25,7 @@ std::map<string, string> my_terminal::ParseOptions(int argc, char *argv[]) {
         options[str.substr(2)] = "true";
       }
     } else {
-      // オプション以外はとりあえず破棄
+      options[OptionKeywords::TESTDATA_FILE_NAME] = str;
     }
   }
 
