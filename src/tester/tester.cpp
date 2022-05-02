@@ -76,6 +76,10 @@ std::vector<my_tester::TestData> my_tester::GetTestDataByJSON(
       }
       if (it_input == "") {
         string it_run_command = it_run.substr(0, it_run_sp_index);
+        size_t it_run_command_exe_index = it_run_command.find_first_of(".exe");
+        if (it_run_command_exe_index != string::npos) {
+          it_run_command = it_run_command.erase(it_run_command_exe_index);
+        }
         for (int i = 0; i < io::DefaultConfig::COMPILERS_SIZE; i++) {
           if (it_run_command == io::DefaultConfig::COMPILERS[i]) {
             test_data.type = Compile;
