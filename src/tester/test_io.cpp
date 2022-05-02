@@ -9,15 +9,17 @@ const char *my_tester::io::DefaultConfig::COMPILERS[] = {"g++", "c++", "cl"};
 const int my_tester::io::DefaultConfig::COMPILERS_SIZE = 3;
 const char *my_tester::io::DefaultConfig::CHECK_COMMAND = "where";
 const char *my_tester::io::DefaultConfig::COMPILE_OUT_FILE = "test.o";
-const char *my_tester::io::DefaultConfig::PRINT_COMMAND = "echo";
+const char *my_tester::io::DefaultConfig::PRINT_COMMAND = "type";
+const char *my_tester::io::DefaultConfig::DELETE_COMMAND = "del";
+const char *my_tester::io::DefaultConfig::INPUT_TEXT_FILE_NAME = "2c4485a79ada";
 
 // 現在Windowsのみの対応
-int my_tester::io::RunByShell(string cmd, string *std_out, int *status_code) {
+bool my_tester::io::RunByShell(string cmd, string *std_out, int *status_code) {
   std::shared_ptr<FILE> pipe(_popen(cmd.c_str(), "r"), [&](FILE *p) {
     status_code = new int(_pclose(p));
   });
   if (!pipe) {
-    return -1;
+    return false;
   }
   char buf[256];
   while (!feof(pipe.get())) {
@@ -27,7 +29,7 @@ int my_tester::io::RunByShell(string cmd, string *std_out, int *status_code) {
   }
   *status_code = *(new int(_pclose(pipe.get())));
 
-  return 0;
+  return true;
 }
 
 bool my_tester::io::CheckHasCommand(string cmd) {
@@ -86,17 +88,24 @@ string my_tester::io::RunFile(string file, string input) {
   if (input == "") {
     cmd = file;
   } else {
-    cmd = string(DefaultConfig::PRINT_COMMAND) + " \"" + input + "\" | " + file;
+    FileWrite(string(DefaultConfig::INPUT_TEXT_FILE_NAME), input);
+    cmd = string(DefaultConfig::PRINT_COMMAND) + " " +
+          string(DefaultConfig::INPUT_TEXT_FILE_NAME) + " | " + file;
   }
   string std_out = "";
   int status_code = -1;
-  if (my_tester::io::RunByShell(cmd, &std_out, &status_code)) {
-    return std_out;
+  my_tester::io::RunByShell(cmd, &std_out, &status_code);
+  if (input != "") {
+    string rm_cmd = string(DefaultConfig::DELETE_COMMAND) + " " +
+                    string(DefaultConfig::INPUT_TEXT_FILE_NAME);
+    string rm_s_out = "";
+    int rm_s_code = 0;
+    my_tester::io::RunByShell(rm_cmd, &rm_s_out, &rm_s_code);
   }
-  return "";
+  return std_out;
 }
 
-int my_tester::io::FileOpen(string file, string *file_out) {
+bool my_tester::io::FileOpen(string file, string *file_out) {
   std::ifstream ifs(file);
   string str;
   if (ifs.fail()) {
@@ -104,10 +113,18 @@ int my_tester::io::FileOpen(string file, string *file_out) {
     string out_str = my_terminal::decoration::AddColorToString(
         "Failed to open \"" + file + "\".", color_code);
     my_terminal::PrintToShell(out_str);
-    return -1;
+    return false;
   }
   while (getline(ifs, str)) {
     *file_out += str + '\n';
   }
-  return 0;
+  return true;
+}
+
+bool my_tester::io::FileWrite(string file, string content) {
+  std::ofstream ofs;
+  ofs.open(file, std::ios::out);
+  ofs << content;
+  ofs.close();
+  return true;
 }

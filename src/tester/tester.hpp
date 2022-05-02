@@ -3,19 +3,24 @@
 
 #include <map>
 #include <string>
+#include <vector>
 using std::string;
 
 namespace my_tester {
+enum TestRunType { Compile, Run };
 struct TestData {
   string test_name;
   string file_name;
-  string type;
+  TestRunType type;
   string input = "";
   string output = "";
 };
+struct DefaultConfig {
+  static const char *TESTDATA_FILE_NAME;
+};
 bool IsMatchTest(string result, string expected);
-TestData GetTestDataByJSON(string json_content);
-int RunTests(std::map<string, string> options);
+std::vector<TestData> GetTestDataByJSON(string json_content);
+bool RunTests(std::map<string, string> options);
 namespace io {
 struct DefaultConfig {
   static const char *COMPILERS[];
@@ -23,12 +28,15 @@ struct DefaultConfig {
   static const char *CHECK_COMMAND;
   static const char *COMPILE_OUT_FILE;
   static const char *PRINT_COMMAND;
+  static const char *DELETE_COMMAND;
+  static const char *INPUT_TEXT_FILE_NAME;
 };
-int RunByShell(string cmd, string *std_out, int *status_code);
+bool RunByShell(string cmd, string *std_out, int *status_code);
 bool CheckHasCommand(string cmd);
 string CompileCppFile(string file, string compiler = "", string option = "");
 string RunFile(string file, string input = "");
-int FileOpen(string file, string *file_out);
+bool FileOpen(string file, string *file_out);
+bool FileWrite(string file, string content);
 }  // namespace io
 }  // namespace my_tester
 
