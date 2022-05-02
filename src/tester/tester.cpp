@@ -9,9 +9,8 @@ using my_terminal::OptionKeywords;
 const char *my_tester::DefaultConfig::TESTDATA_FILE_NAME =
     "./.github/classroom/autograding.json";
 
-bool my_tester::IsMatchTest(string result, string expected) {
+bool my_tester::IsMatchTest(string result, string expected, string *std_out) {
   bool ret_flag = true;
-  string std_out;
   bool while_flag = true;
   size_t r_r_index = result.find_first_of('\r');
   while (r_r_index != string::npos) {
@@ -44,18 +43,15 @@ bool my_tester::IsMatchTest(string result, string expected) {
       ret_flag = false;
       int red_color = my_terminal::decoration::ShellColorCode::RED;
       int green_color = my_terminal::decoration::ShellColorCode::GREEN;
-      std_out += my_terminal::decoration::AddColorToString(
+      *std_out += my_terminal::decoration::AddColorToString(
           "-- " + line_result + '\n', red_color);
-      std_out += my_terminal::decoration::AddColorToString(
+      *std_out += my_terminal::decoration::AddColorToString(
           "++ " + line_expected + '\n', green_color);
     } else {
-      std_out += "   " + line_result + '\n';
+      *std_out += "   " + line_result + '\n';
     }
   }
-
-  if (!ret_flag) {
-    my_terminal::PrintToShell(std_out + '\n');
-  }
+  *std_out += '\n';
 
   return ret_flag;
 }
@@ -110,14 +106,47 @@ bool my_tester::RunTests(std::map<string, string> options) {
     return false;
   }
   std::vector<TestData> test_datas = GetTestDataByJSON(test_data_file);
+  std::vector<std::vector<string>> std_table;
+  std_table.push_back(std::vector<string>{"Status", "Name", "File"});
   string last_file;
+  int red_code = my_terminal::decoration::ShellColorCode::RED;
+  int green_code = my_terminal::decoration::ShellColorCode::GREEN;
   for (int i = 0; i < test_datas.size(); i++) {
     // std::cout << test_datas[i].test_name << std::endl;
+    bool is_pass = false;
     if (test_datas[i].type == Compile) {
       last_file = io::CompileCppFile(test_datas[i].file_name);
+      is_pass = last_file != "";
+      if (!is_pass) {
+        my_terminal::PrintToShell(
+            my_terminal::decoration::AddColorToString(
+                test_datas[i].test_name + " : " + test_datas[i].file_name,
+                red_code, true) +
+            "\n\n");
+      }
     } else if (test_datas[i].type == Run) {
-      string std_out = io::RunFile(last_file, test_datas[i].input);
+      if (last_file != "") {
+        string std_out = io::RunFile(last_file, test_datas[i].input);
+        string test_out = "";
+        is_pass = IsMatchTest(std_out, test_datas[i].output, &test_out);
+        if (!is_pass) {
+          my_terminal::PrintToShell(
+              my_terminal::decoration::AddColorToString(
+                  test_datas[i].test_name + " : " + test_datas[i].file_name,
+                  red_code, true) +
+              '\n');
+          my_terminal::PrintToShell(test_out);
+        }
+      } else {
+        is_pass = false;
+      }
     }
+    string status_str =
+        is_pass ? my_terminal::decoration::AddColorToString("PASS", green_code)
+                : my_terminal::decoration::AddColorToString("FAIL", red_code);
+    std_table.push_back(std::vector<string>{status_str, test_datas[i].test_name,
+                                            test_datas[i].file_name});
   }
+  my_terminal::PrintToShell(my_terminal::decoration::CreateStrTable(std_table));
   return 0;
 }

@@ -72,12 +72,14 @@ string my_tester::io::CompileCppFile(string file, string compiler,
     string std_out = "";
     int status_code = -1;
     if (RunByShell(cmd, &std_out, &status_code)) {
-      const int max_path = 128;
-      char szDrive[8], szPath[max_path], szFName[max_path], szExt[max_path];
-      _splitpath_s(file.c_str(), szDrive, sizeof(szDrive), szPath,
-                   sizeof(szPath), szFName, sizeof(szFName), szExt,
-                   sizeof(szExt));
-      return string(szPath) + DefaultConfig::COMPILE_OUT_FILE;
+      if (status_code == 0) {
+        const int max_path = 128;
+        char szDrive[8], szPath[max_path], szFName[max_path], szExt[max_path];
+        _splitpath_s(file.c_str(), szDrive, sizeof(szDrive), szPath,
+                     sizeof(szPath), szFName, sizeof(szFName), szExt,
+                     sizeof(szExt));
+        return string(szPath) + DefaultConfig::COMPILE_OUT_FILE;
+      }
     }
   }
   return "";

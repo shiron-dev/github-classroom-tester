@@ -18,7 +18,7 @@ struct TestData {
 struct DefaultConfig {
   static const char *TESTDATA_FILE_NAME;
 };
-bool IsMatchTest(string result, string expected);
+bool IsMatchTest(string result, string expected, string *std_out);
 std::vector<TestData> GetTestDataByJSON(string json_content);
 bool RunTests(std::map<string, string> options);
 namespace io {

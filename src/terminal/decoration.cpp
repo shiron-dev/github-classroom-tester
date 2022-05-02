@@ -16,7 +16,7 @@ string my_terminal::decoration::AddColorToString(string str, int color,
     color_code += 10;
   }
   string color_str = "\u001b[" + std::to_string(color_code) + "m";
-  return color_str + str + "\u001b[m";
+  return color_str + str + "\u001b[0m";
 }
 
 string my_terminal::decoration::CreateStrTable(
