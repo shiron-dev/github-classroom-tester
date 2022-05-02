@@ -9,7 +9,7 @@ jobs:
       - name: cpplint
         run: |
           pip install cpplint
-          cpplint --filter=-legal --recursive src/
+          cpplint --filter=-legal --exclude=src/lib --recursive src/
       - name: build
         run: |
           cmake . -B build
