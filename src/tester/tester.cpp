@@ -73,6 +73,12 @@ std::vector<my_tester::TestData> my_tester::GetTestDataByJSON(
       if (it_run_next_sp_index != string::npos) {
         test_data.file_name =
             test_data.file_name.substr(0, it_run_next_sp_index);
+        if (test_data.file_name == "-o") {
+          size_t last_it = it_run.find_last_of(" ");
+          if (last_it != string::npos) {
+            test_data.file_name = it_run.substr(last_it + 1);
+          }
+        }
       }
       if (it_input == "") {
         string it_run_command = it_run.substr(0, it_run_sp_index);
