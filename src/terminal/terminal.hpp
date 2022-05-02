@@ -9,6 +9,8 @@ using std::string;
 namespace my_terminal {
 struct OptionKeywords {
   static const char *COMMAND_NAME;
+  static const char *TESTDATA_FILE_NAME;
+  static const char *TARGET_TEST_NAME;
 };
 std::map<string, string> ParseOptions(int argc, char *argv[]);
 void PrintToShell(string str);
