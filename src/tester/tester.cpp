@@ -121,13 +121,21 @@ bool my_tester::RunTests(std::map<string, string> options) {
   string last_file;
   int red_code = my_terminal::decoration::ShellColorCode::RED;
   int green_code = my_terminal::decoration::ShellColorCode::GREEN;
+  size_t last_name_length = 0;
   for (int i = 0; i < test_datas.size(); i++) {
-    // std::cout << test_datas[i].test_name << std::endl;
+    size_t spase_length =
+        last_name_length > test_datas[i].test_name.length()
+            ? last_name_length - test_datas[i].test_name.length()
+            : 0;
+    my_terminal::PrintToShell('\r' + test_datas[i].test_name +
+                              string(spase_length, ' '));
+    last_name_length = test_datas[i].test_name.length();
     bool is_pass = false;
     if (test_datas[i].type == Compile) {
       last_file = io::CompileCppFile(test_datas[i].file_name);
       is_pass = last_file != "";
       if (!is_pass) {
+        my_terminal::PrintToShell("\r");
         my_terminal::PrintToShell(
             my_terminal::decoration::AddColorToString(
                 test_datas[i].test_name + " : " + test_datas[i].file_name,
@@ -140,6 +148,7 @@ bool my_tester::RunTests(std::map<string, string> options) {
         string test_out = "";
         is_pass = IsMatchTest(std_out, test_datas[i].output, &test_out);
         if (!is_pass) {
+          my_terminal::PrintToShell("\r");
           my_terminal::PrintToShell(
               my_terminal::decoration::AddColorToString(
                   test_datas[i].test_name + " : " + test_datas[i].file_name,
@@ -157,6 +166,7 @@ bool my_tester::RunTests(std::map<string, string> options) {
     std_table.push_back(std::vector<string>{status_str, test_datas[i].test_name,
                                             test_datas[i].file_name});
   }
+  my_terminal::PrintToShell("\r");
   my_terminal::PrintToShell(my_terminal::decoration::CreateStrTable(std_table));
   return 0;
 }
