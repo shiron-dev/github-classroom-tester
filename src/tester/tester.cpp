@@ -1,5 +1,6 @@
 #include "tester/tester.hpp"
 
+#include <chrono>
 #include <iostream>
 
 #include "lib/json.hpp"
@@ -117,7 +118,8 @@ bool my_tester::RunTests(std::map<string, string> options) {
   }
   std::vector<TestData> test_datas = GetTestDataByJSON(test_data_file);
   std::vector<std::vector<string>> std_table;
-  std_table.push_back(std::vector<string>{"Status", "Name", "File"});
+  std_table.push_back(
+      std::vector<string>{"Status", "Name", "File", "Time(ms)"});
   string last_file;
   int red_code = my_terminal::decoration::ShellColorCode::RED;
   int green_code = my_terminal::decoration::ShellColorCode::GREEN;
@@ -130,6 +132,9 @@ bool my_tester::RunTests(std::map<string, string> options) {
     my_terminal::PrintToShell('\r' + test_datas[i].test_name +
                               string(spase_length, ' '));
     last_name_length = test_datas[i].test_name.length();
+
+    auto start = std::chrono::system_clock::now();
+
     bool is_pass = false;
     if (test_datas[i].type == Compile) {
       last_file = io::CompileCppFile(test_datas[i].file_name);
@@ -160,11 +165,17 @@ bool my_tester::RunTests(std::map<string, string> options) {
         is_pass = false;
       }
     }
+    auto end = std::chrono::system_clock::now();
+    auto test_time =
+        std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+            .count();
+
     string status_str =
         is_pass ? my_terminal::decoration::AddColorToString("PASS", green_code)
                 : my_terminal::decoration::AddColorToString("FAIL", red_code);
     std_table.push_back(std::vector<string>{status_str, test_datas[i].test_name,
-                                            test_datas[i].file_name});
+                                            test_datas[i].file_name,
+                                            std::to_string(test_time)});
   }
   my_terminal::PrintToShell("\r");
   my_terminal::PrintToShell(my_terminal::decoration::CreateStrTable(std_table));
