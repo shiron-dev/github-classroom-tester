@@ -1,5 +1,5 @@
 @echo off
-cpplint --filter=-legal --exclude=src/lib --recursive src/
+cpplint --filter=-legal,-build/c++11 --exclude=src/lib --recursive src/
 
 set OR_FLAG=FALSE
 set NO_CONF="--no-conf"
