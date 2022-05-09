@@ -8,7 +8,7 @@
 const char *my_tester::io::DefaultConfig::COMPILERS[] = {"g++", "c++", "cl"};
 const int my_tester::io::DefaultConfig::COMPILERS_SIZE = 3;
 const char *my_tester::io::DefaultConfig::CHECK_COMMAND = "where";
-const char *my_tester::io::DefaultConfig::COMPILE_OUT_FILE = "test.o";
+const char *my_tester::io::DefaultConfig::COMPILE_OUT_FILE = "022e7c78f38b.o";
 const char *my_tester::io::DefaultConfig::PRINT_COMMAND = "type";
 const char *my_tester::io::DefaultConfig::DELETE_COMMAND = "del";
 const char *my_tester::io::DefaultConfig::INPUT_TEXT_FILE_NAME = "2c4485a79ada";
@@ -83,6 +83,18 @@ string my_tester::io::CompileCppFile(string file, string compiler,
     }
   }
   return "";
+}
+
+bool my_tester::io::DeleteCompileFile() {
+  string rm_cmd = string(DefaultConfig::DELETE_COMMAND) + " " +
+                  string(DefaultConfig::COMPILE_OUT_FILE);
+  string rm_s_out = "";
+  int rm_s_code = 0;
+  my_tester::io::RunByShell(rm_cmd, &rm_s_out, &rm_s_code);
+  if (rm_s_code == 0) {
+    return true;
+  }
+  return false;
 }
 
 string my_tester::io::RunFile(string file, string input) {

@@ -34,6 +34,7 @@ struct DefaultConfig {
 bool RunByShell(string cmd, string *std_out, int *status_code);
 bool CheckHasCommand(string cmd);
 string CompileCppFile(string file, string compiler = "", string option = "");
+bool DeleteCompileFile();
 string RunFile(string file, string input = "");
 bool FileOpen(string file, string *file_out);
 bool FileWrite(string file, string content);
