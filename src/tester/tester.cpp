@@ -177,6 +177,8 @@ bool my_tester::RunTests(std::map<string, string> options) {
                                             test_datas[i].file_name,
                                             std::to_string(test_time)});
   }
+  io::DeleteCompileFile();
+
   my_terminal::PrintToShell("\r");
   my_terminal::PrintToShell(my_terminal::decoration::CreateStrTable(std_table));
   return 0;
