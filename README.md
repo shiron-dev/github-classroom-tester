@@ -77,3 +77,14 @@ Windows 環境ではバッチファイルにより、一つのコマンドで`cp
   ```sh
   .\lint-cmake.bat --no-msg
   ```
+
+## 使用ライセンス
+The project contains the nlohmann/json from Niels Lohmann which is licensed under the MIT License. Copyright © 2013-2022 Niels Lohmann
+
+The project contains the UTF-8 Decoder from Bjoern Hoehrmann which is licensed under the MIT License. Copyright © 2008-2009 Björn Hoehrmann bjoern@hoehrmann.de
+
+The project contains a slightly modified version of the Grisu2 algorithm from Florian Loitsch which is licensed under the MIT License. Copyright © 2009 Florian Loitsch
+
+The project contains a copy of Hedley from Evan Nemerson which is licensed as CC0-1.0.
+
+The project contains parts of Google Abseil which is licensed under the Apache 2.0 License.
